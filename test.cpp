@@ -38,5 +38,8 @@ int main() {
 
         std::cout << range::has(r, 5) << std::endl;
 
+        for(int i: r)
+                std::cout << i << std::endl;
+
         return 0;
 }
