@@ -41,5 +41,9 @@ int main() {
         for(int i: r)
                 std::cout << i << std::endl;
 
+
+        std::cout << "First: " << range::front(r) << std::endl;
+        std::cout << "Last: " << range::back(r) << std::endl;
+
         return 0;
 }
