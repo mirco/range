@@ -91,9 +91,7 @@ constexpr auto front(const C& c) -> decltype(*std::begin(c)) { // undefined beha
 
 template <class C>
 constexpr auto back(const C& c) -> decltype(*--std::end(c)) { // undefined behaviour if c is empty
-        auto it = std::end(c);
-        --it;
-        return *it;
+        return *std::prev(std::end(c));
 }
 
 template <class C>
