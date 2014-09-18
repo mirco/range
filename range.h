@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <type_traits>
 #include <utility>
 
@@ -114,22 +115,24 @@ Function for_each(const C& c, Function fn) {
 }
 
 // Divide range in <Divisor> equal subranges.
-template <class C, unsigned Divisor>
-std::array<C, Divisor> divide(const C& c) {
-        static_assert(Divisor > 0, "Divisor cannot be 0!");
+template <class C>
+std::vector<C> divide(C& c, const unsigned divisor) {
+        assert(divisor > 0);
 
-        std::array<C, Divisor> results;
+        std::vector<C> results;
+        results.reserve(divisor);
+
         auto last = std::begin(c);
-        auto d = size(c) / Divisor;
-        auto r = size(c) % Divisor;
-        for(unsigned i = 0; i < Divisor; ++i) {
+        auto d = size(c) / divisor;
+        auto r = size(c) % divisor;
+        while(last != std::end(c)) {
                 auto first = last;
                 std::advance(last, d);
                 if(r > 0) {
                         std::advance(last, 1);
                         --r;
                 }
-                results[i] = C(first, last);
+                results.emplace_back(first, last);
         }
 
         return results;
