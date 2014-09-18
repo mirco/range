@@ -39,11 +39,11 @@ class range {
         range() = delete;
         range(const Iterator& begin, const Iterator& end);
 
-        Iterator begin() const;
-        Iterator end() const;
+        constexpr Iterator begin() const;
+        constexpr Iterator end() const;
 
-        bool empty() const;
-        size_t size() const;
+        constexpr bool empty() const;
+        constexpr size_t size() const;
 
     private:
         const iterator first;
@@ -55,22 +55,22 @@ range<Iterator>::range(const Iterator& begin, const Iterator& end)
     : first(begin), last(end) {}
 
 template <class Iterator>
-Iterator range<Iterator>::begin() const {
+constexpr Iterator range<Iterator>::begin() const {
         return first;
 }
 
 template <class Iterator>
-Iterator range<Iterator>::end() const {
+constexpr Iterator range<Iterator>::end() const {
         return last;
 }
 
 template <class Iterator>
-bool range<Iterator>::empty() const {
+constexpr bool range<Iterator>::empty() const {
         return first == last ? true : false;
 }
 
 template <class Iterator>
-size_t range<Iterator>::size() const {
+constexpr size_t range<Iterator>::size() const {
         return std::distance(first, last);
 }
 
