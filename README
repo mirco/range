@@ -1,0 +1,3 @@
+The range class provides an interface to combine to iterators representing
+a range of objects and use them similarly to normal container classes.
+
