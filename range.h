@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <array>
+#include <type_traits>
 #include <utility>
 
 namespace range {
@@ -36,6 +37,7 @@ class range {
 
         range() = delete;
         range(const Iterator& begin, const Iterator& end);
+
         Iterator begin() const;
         Iterator end() const;
 
@@ -63,10 +65,7 @@ Iterator range<Iterator>::end() const {
 
 template <class Iterator>
 bool range<Iterator>::empty() const {
-        if(first == last)
-                return true;
-
-        return false;
+        return first == last ? true : false;
 }
 
 template <class Iterator>
@@ -97,8 +96,8 @@ constexpr auto back(const C& c) -> decltype(*--std::end(c)) { // undefined behav
 }
 
 template <class C>
-range<typename C::iterator> make_range(const C& c) {
-        return range<typename C::iterator>(std::begin(c), std::end(c));
+range<typename std::conditional<std::is_const<C>::value, typename C::const_iterator, typename C::iterator>::type> make_range(C& c) {
+        return range<typename std::conditional<std::is_const<C>::value, typename C::const_iterator, typename C::iterator>::type>(std::begin(c), std::end(c));
 }
 
 // algorithms for range-like classes
@@ -124,7 +123,7 @@ std::array<C, Divisor> divide(const C& c) {
         auto d = size(c) / Divisor;
         auto r = size(c) % Divisor;
         for(unsigned i = 0; i < Divisor; ++i) {
-                first = last;
+                auto first = last;
                 std::advance(last, d);
                 if(r > 0) {
                         std::advance(last, 1);
