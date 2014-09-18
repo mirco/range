@@ -28,11 +28,15 @@
 int main() {
         std::vector<int> v {1, 3, 5, 7, 9};
 
-        auto r = range(v);
+        auto r = range::make_range(v);
 
-        for_each(r, [](const int &i) {
+        range::for_each(r, [](const int &i) {
                 std::cout << i << std::endl;
         });
+
+        auto s = range::divide(r, 3);
+
+        std::cout << range::has(r, 5) << std::endl;
 
         return 0;
 }
