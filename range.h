@@ -105,8 +105,7 @@ range<typename std::conditional<std::is_const<C>::value, typename C::const_itera
 
 template <class C, class T>
 constexpr bool has(const C& c, const T& t) {
-        auto it = find(std::begin(c), std::end(c), t);
-        return it == std::end(c) ? false : true;
+        return find(std::begin(c), std::end(c), t) == std::end(c) ? false : true;
 }
 
 template <class C, class Function>
