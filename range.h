@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <iterator>
 #include <type_traits>
 #include <utility>
 
@@ -95,8 +96,31 @@ constexpr auto back(const C& c) -> decltype(*--std::end(c)) { // undefined behav
 }
 
 template <class C>
-range<typename std::conditional<std::is_const<C>::value, typename C::const_iterator, typename C::iterator>::type> make_range(C& c) {
-        return range<typename std::conditional<std::is_const<C>::value, typename C::const_iterator, typename C::iterator>::type>(std::begin(c), std::end(c));
+range<typename std::conditional<std::is_const<C>::value, typename C::const_iterator, typename C::iterator>::type>
+make_range(C& c) {
+        return range<
+            typename std::conditional<std::is_const<C>::value, typename C::const_iterator, typename C::iterator>::type>(
+            std::begin(c), std::end(c));
+}
+
+template <class C>
+constexpr C grow_left(const C &c) {
+        return C(std::prev(std::begin(c)), std::end(c));
+}
+
+template <class C>
+constexpr C shrink_left(const C &c) {
+        return C(std::next(std::begin(c)), std::end(c));
+}
+
+template<class C>
+constexpr C grow_right(const C &c) {
+        return C(std::begin(c), std::next(std::end(c)));
+}
+
+template<class C>
+constexpr C shrink_right(const C &c) {
+        return C(std::begin(c), std::prev(std::end(c)));
 }
 
 // algorithms for range-like classes
