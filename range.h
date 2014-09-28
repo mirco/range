@@ -17,7 +17,7 @@
   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-  THE SOFTWARE./***
+  THE SOFTWARE.
 ***/
 
 #ifndef RANGE_H_
@@ -30,7 +30,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace range {
+namespace iterator_range {
 
 template <class Iterator>
 class range {
@@ -38,7 +38,9 @@ class range {
         typedef Iterator iterator;
 
         range() = delete;
+        range(const range<Iterator>&) = default;
         range(const Iterator& begin, const Iterator& end);
+        range<Iterator>& operator=(const range<Iterator>& r) = default;
 
         constexpr Iterator begin() const;
         constexpr Iterator end() const;
@@ -47,8 +49,8 @@ class range {
         constexpr size_t size() const;
 
     private:
-        const iterator first;
-        const iterator last;
+        iterator first;
+        iterator last;
 };
 
 template <class Iterator>
@@ -76,12 +78,12 @@ constexpr size_t range<Iterator>::size() const {
 }
 
 template <class C>
-constexpr auto size(const C& c) -> decltype(c.size()) {
+constexpr size_t size(const C& c) {
         return c.size();
 }
 
 template <class C>
-constexpr auto empty(const C& c) -> decltype(c.empty()) {
+constexpr bool empty(const C& c) {
         return c.empty();
 }
 
@@ -91,35 +93,37 @@ constexpr auto front(const C& c) -> decltype(*std::begin(c)) { // undefined beha
 }
 
 template <class C>
-constexpr auto back(const C& c) -> decltype(*--std::end(c)) { // undefined behaviour if c is empty
+constexpr auto back(const C& c)
+    -> decltype(*std::prev(std::end(c))) { // undefined behaviour if c is empty
         return *std::prev(std::end(c));
 }
 
 template <class C>
-range<typename std::conditional<std::is_const<C>::value, typename C::const_iterator, typename C::iterator>::type>
-make_range(C& c) {
-        return range<
-            typename std::conditional<std::is_const<C>::value, typename C::const_iterator, typename C::iterator>::type>(
-            std::begin(c), std::end(c));
+using cond_const_iterator = typename std::conditional<
+    std::is_const<C>::value, typename C::const_iterator, typename C::iterator>::type;
+
+template <class C>
+range<cond_const_iterator<C> > make_range(C& c) {
+        return range<cond_const_iterator<C> >(std::begin(c), std::end(c));
 }
 
 template <class C>
-constexpr C grow_left(const C &c) {
+constexpr C grow_begin(const C& c) {
         return C(std::prev(std::begin(c)), std::end(c));
 }
 
 template <class C>
-constexpr C shrink_left(const C &c) {
+constexpr C shrink_begin(const C& c) {
         return C(std::next(std::begin(c)), std::end(c));
 }
 
-template<class C>
-constexpr C grow_right(const C &c) {
+template <class C>
+constexpr C grow_end(const C& c) {
         return C(std::begin(c), std::next(std::end(c)));
 }
 
-template<class C>
-constexpr C shrink_right(const C &c) {
+template <class C>
+constexpr C shrink_end(const C& c) {
         return C(std::begin(c), std::prev(std::end(c)));
 }
 
@@ -160,10 +164,15 @@ std::vector<C> divide(C& c, const unsigned divisor) {
 }
 
 template <class C, class UnaryPredicate>
-typename C::iterator find_if(const C& c, UnaryPredicate pred) {
-        return find_if(std::begin(c), std::end(c), pred);
+typename C::iterator find_if(C& c, UnaryPredicate pred) {
+        return std::find_if(std::begin(c), std::end(c), pred);
 }
 
-} // namespace range
+template<class C, class UnaryPredicate>
+typename C::const_iterator find_if(const C& c, UnaryPredicate pred) {
+        return std::find_if(std::begin(c), std::end(c), pred);
+}
+
+} // namespace iterator_range
 
 #endif // RANGE_H_
