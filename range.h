@@ -139,6 +139,16 @@ Function for_each(const C& c, Function fn) {
         return std::for_each(std::begin(c), std::end(c), fn);
 }
 
+template <class C, class Function>
+Function for_each(const C& c1, const C& c2, Function fn) {
+        auto it1 = std::begin(c1);
+        auto it2 = std::begin(c2);
+        while(it1 != std::end(c1) && it2 != std::end(c2))
+                fn(*it1, *it2);
+
+        return fn;
+}
+
 // Divide range in <Divisor> equal subranges.
 template <class C>
 std::vector<C> divide(C& c, const unsigned divisor) {
@@ -168,7 +178,7 @@ typename C::iterator find_if(C& c, UnaryPredicate pred) {
         return std::find_if(std::begin(c), std::end(c), pred);
 }
 
-template<class C, class UnaryPredicate>
+template <class C, class UnaryPredicate>
 typename C::const_iterator find_if(const C& c, UnaryPredicate pred) {
         return std::find_if(std::begin(c), std::end(c), pred);
 }
